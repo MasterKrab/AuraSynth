@@ -1,0 +1,23 @@
+:root {
+  --header-height: 2rem;
+  --player-height: 7.5rem;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+html {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
