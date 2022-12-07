@@ -36,6 +36,7 @@
   }
 
   .page {
-    overflow-y: auto;
+    overflow: auto;
+    width: 100vw;
   }
 </style>

@@ -6,7 +6,7 @@
   export let loading: "lazy" | "eager" = "lazy";
 </script>
 
-<div class="image-container">
+<div class="image-container" class:image-container--no-image={!url}>
   {#if url}
     <img class="image" in:fade={{ duration: 250 }} src={url} {loading} {alt} />
   {/if}
@@ -14,16 +14,18 @@
 
 <style>
   .image-container {
-    width: 11em;
-    height: 11em;
-    background-image: url("/assets/icons/music-note.svg");
+    max-width: 100%;
+    aspect-ratio: 1 / 1;
     background-repeat: no-repeat;
     background-position: center;
     background-size: 60%;
   }
 
+  .image-container--no-image {
+    background-image: url("/assets/icons/music-note.svg");
+  }
+
   .image {
     object-fit: cover;
-    height: 100%;
   }
 </style>
