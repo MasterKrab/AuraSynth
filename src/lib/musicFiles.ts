@@ -33,16 +33,14 @@ export const searchMusicPaths = async (
   return paths.flat();
 };
 
-export const readSongMetadata = (path: string) =>
+export const readSongMetadata = (path: string): Promise<Song> =>
   invoke("read_song_metadata", { path });
 
 export const searchSongs = async (directory: string) => {
   const paths = await searchMusicPaths(directory);
 
   const promises = paths.map(async (path) => {
-    const song = (await invoke("read_song_metadata", {
-      path,
-    })) as Song;
+    const song = await readSongMetadata(path);
 
     return { path, ...song };
   });

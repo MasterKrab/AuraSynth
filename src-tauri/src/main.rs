@@ -48,9 +48,25 @@ fn replace_null(text: &str) -> String {
 use std::fs::{File, create_dir_all};
 use std::path::{Path, PathBuf};
 use std::io::{Write, Seek, Read};
+use std::thread;
+use ffprobe;
 
 #[tauri::command]
-fn read_song_metadata(path: &str) -> Result<Song, String> {
+async fn read_song_metadata(path: &str) -> Result<Song, String> {
+    let path2 = path.to_string();
+
+    let handle = thread::spawn(|| {
+        match ffprobe::ffprobe(path2) {
+            Ok(probe) => {
+                match probe.format.duration {
+                    Some(duration) => Some(duration.parse::<f32>().unwrap() as u32),
+                    None => None
+                }
+            },
+            Err(_) => None
+        }
+    });
+
     let tag = match Tag::read_from_path(path) {
         Ok(tag) => tag,
         Err(e) => return Err(e.to_string()),
@@ -67,13 +83,14 @@ fn read_song_metadata(path: &str) -> Result<Song, String> {
     }).collect();
     let track = if let Some(track) = tag.track() { Some(track) } else { None };
     let genre = if let Some(genre) = tag.genre() { Some(genre.to_string()) } else { None };
-    let duration = if let Some(duration) = tag.duration() { Some(duration) } else { None };
 
     let lyrics = tag.lyrics().map(|lyrics| Lyrics {
         lang: lyrics.lang.to_string(),
         description: lyrics.description.to_string(),
         text: lyrics.text.to_string(),
     }).collect();
+
+    let duration = handle.join().unwrap();
 
     Ok(Song {
         title,
