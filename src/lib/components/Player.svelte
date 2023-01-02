@@ -7,19 +7,22 @@
   import music from "../stores/music";
   import { getSongPicture } from "../pictures";
   import { updateMediaSessionSong, resetMediaSession } from "../mediaSession";
+  import formatSeconds from "../formatSeconds";
   import Artwork from "./Artwork.svelte";
+  import PlayerControls from "./PlayerControls.svelte";
+  import PlayerTracksOptions from "./PlayerTracksOptions.svelte";
 
   let audioElement: HTMLAudioElement;
   let currentTime = 0;
   let artwork: Picture | null = null;
-  let playing = false;
+  let isPlaying = false;
   let duration = 0;
   let playbackRate: number;
   let volume: number;
 
-  $: navigator.mediaSession.playbackState = playing ? "playing" : "paused";
+  $: navigator.mediaSession.playbackState = isPlaying ? "playing" : "paused";
 
-  $: if ($music.currentSong) {
+  $: if ($music.currentSong?.path) {
     artwork = null;
 
     getSongPicture($music.currentSong.path).then((picture) => {
@@ -30,7 +33,10 @@
   $: if ($music.currentSong && artwork)
     updateMediaSessionSong($music.currentSong, artwork);
 
-  $: !$music.currentSong && resetMediaSession();
+  $: if (!$music.currentSong) {
+    artwork = null;
+    resetMediaSession();
+  }
 
   const updatePositionState = () => {
     navigator.mediaSession.setPositionState({
@@ -40,23 +46,45 @@
     });
   };
 
+  const updateAudioPlayBackState = () => {
+    isPlaying ? audioElement.play() : audioElement.pause();
+  };
+
   const handlePlay = () => {
-    playing = true;
+    isPlaying = true;
+    audioElement.paused && audioElement.play();
   };
 
   const handlePause = () => {
-    playing = false;
+    isPlaying = false;
+    !audioElement.paused && audioElement.pause();
   };
 
   const nextTrack = () => {
-    $music.currentSongIndex < $music.tracks.length - 1
-      ? music.nextTrack()
-      : music.resetTracks();
+    const isLastSong = $music.currentSongIndex === $music.tracks.length - 1;
+
+    if (isLastSong && $music.loop) {
+      music.repeatTracks();
+      currentTime = 0;
+      audioElement.play();
+      return;
+    }
+
+    if (isLastSong) {
+      music.resetTracks();
+      isPlaying = false;
+      return;
+    }
+
+    music.nextTrack();
   };
 
-  const handleEnded = () => {
-    playing = false;
-    nextTrack();
+  const previousTrack = () => {
+    $music.currentSongIndex > 0 ? music.previousTrack() : (currentTime = 0);
+  };
+
+  const handleChangeShuffle = ({ detail: shuffle }: CustomEvent<boolean>) => {
+    shuffle ? music.shuffleTracks() : music.resetTracks();
   };
 
   onMount(() => {
@@ -69,9 +97,7 @@
       audioElement.pause();
     });
 
-    navigator.mediaSession.setActionHandler("previoustrack", () => {
-      $music.currentSongIndex > 0 ? music.previousTrack() : (currentTime = 0);
-    });
+    navigator.mediaSession.setActionHandler("previoustrack", previousTrack);
 
     navigator.mediaSession.setActionHandler("nexttrack", nextTrack);
 
@@ -93,49 +119,62 @@
 
       updatePositionState();
     });
-    
+
     navigator.mediaSession.setActionHandler("stop", music.resetTracks);
   });
 </script>
 
 <article class="player" aria-label="Player">
-  {#if $music.currentSong && artwork}
+  {#if artwork}
     <Artwork url={artwork.url} alt={artwork.description} />
   {/if}
 
-  {#key !!$music.currentSong}
-    <audio
-      src={$music.currentSong ? convertFileSrc($music.currentSong.path) : null}
-      disabled={!$music.currentSong}
-      on:play={handlePlay}
-      on:pause={handlePause}
-      on:ended={handleEnded}
-      on:ratechange={updatePositionState}
-      bind:this={audioElement}
-      bind:currentTime
-      bind:duration
-      bind:playbackRate
-      bind:volume
-      autoplay
-      controls
-    />
-  {/key}
+  {#if $music.currentSong}
+    <h1>{$music.currentSong.title || "Unknown title"}</h1>
+    <p>{$music.currentSong.artist || "Unknown artist"}</p>
+  {/if}
 
-  <button
-    role="switch"
-    aria-checked={playing}
-    on:click={playing
-      ? audioElement.pause.bind(audioElement)
-      : audioElement.play.bind(audioElement)}
-  >
-    {playing ? "Pause" : "Play"}
-  </button>
+  <p>{formatSeconds(currentTime)} / {formatSeconds(duration)}</p>
+
+  <audio
+    class="audio"
+    src={$music?.currentSong?.path && convertFileSrc($music.currentSong.path)}
+    on:play={handlePlay}
+    on:pause={handlePause}
+    on:ended={nextTrack}
+    on:ratechange={updatePositionState}
+    bind:this={audioElement}
+    bind:currentTime
+    bind:duration
+    bind:playbackRate
+    bind:volume
+    autoplay
+    controls
+  />
+
+  <PlayerControls
+    {isPlaying}
+    on:changePlayBackState={updateAudioPlayBackState}
+    on:play={handlePlay}
+    on:pause={handlePause}
+    on:previousTrack={previousTrack}
+    on:nextTrack={nextTrack}
+    disablePreviousTrack={$music.currentSongIndex <= 0 && currentTime <= 0}
+    disableNextTrack={$music.currentSongIndex >= $music.tracks.length - 1}
+    disableAll={$music.tracks.length === 0}
+  />
 
   {#if audioElement}
     <input type="range" bind:value={currentTime} min={0} max={duration} />
   {/if}
 
   <input type="range" bind:value={volume} min={0} max={1} step={0.01} />
+
+  <PlayerTracksOptions
+    bind:loop={$music.loop}
+    shuffle={$music.shuffle}
+    on:changeShuffle={handleChangeShuffle}
+  />
 </article>
 
 <style>
@@ -143,5 +182,9 @@
     display: flex;
     height: var(--player-height, 15rem);
     font-size: 0.5rem;
+  }
+
+  .audio {
+    display: none;
   }
 </style>
