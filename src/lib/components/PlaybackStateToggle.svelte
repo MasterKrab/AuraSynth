@@ -1,13 +1,13 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
-  import InlineSVG from "svelte-inline-svg";
+  import { createEventDispatcher } from 'svelte'
+  import InlineSVG from 'svelte-inline-svg'
 
-  export let isPlaying: boolean = false;
-  export let disabled = false;
+  export let isPlaying: boolean = false
+  export let disabled = false
 
-  const dispatch = createEventDispatcher<{ change: MouseEvent }>();
+  const dispatch = createEventDispatcher<{ change: MouseEvent }>()
 
-  const handleClick = (event: MouseEvent) => dispatch("change", event);
+  const handleClick = (event: MouseEvent) => dispatch('change', event)
 </script>
 
 <button

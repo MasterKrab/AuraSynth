@@ -1,14 +1,14 @@
 <script lang="ts">
-  import type Album from "../types/album";
+  import type Album from '../types/album'
 
-  import AlbumItem from "./AlbumItem.svelte";
+  import AlbumItem from './AlbumItem.svelte'
 
-  export let albums: Album[];
+  export let albums: Album[]
 </script>
 
 <article class="albums" aria-label="Albums">
   {#each albums as album, index}
-    <AlbumItem {album} loading={index >= 30 ? "eager" : "lazy"} />
+    <AlbumItem {album} loading={index >= 30 ? 'eager' : 'lazy'} />
   {/each}
 </article>
 

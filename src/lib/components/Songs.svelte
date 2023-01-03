@@ -1,13 +1,13 @@
 <script lang="ts">
-  import type Song from "../types/song";
+  import type Song from '../types/song'
 
-  import music from "../stores/music";
+  import music from '../stores/music'
 
-  export let songs: Song[];
+  export let songs: Song[]
 
   const createPlaySong = (song: Song) => () => {
-    music.setSongsToTracks(song);
-  };
+    music.setSongsToTracks(song)
+  }
 </script>
 
 <article class="songs" aria-label="Songs">

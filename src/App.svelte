@@ -1,16 +1,16 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import { Router, Route } from "svelte-routing";
+  import { onMount } from 'svelte'
+  import { Router, Route } from 'svelte-routing'
 
-  import music from "./lib/stores/music";
-  import Header from "./lib/components/Header.svelte";
-  import Songs from "./lib/routes/Songs.svelte";
-  import Albums from "./lib/routes/Albums.svelte";
-  import Player from "./lib/components/Player.svelte";
+  import music from './lib/stores/music'
+  import Header from './lib/components/Header.svelte'
+  import Songs from './lib/routes/Songs.svelte'
+  import Albums from './lib/routes/Albums.svelte'
+  import Player from './lib/components/Player.svelte'
 
-  export let url = "";
+  export let url = ''
 
-  onMount(async () => await music.load());
+  onMount(async () => await music.load())
 </script>
 
 <Header />

@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { fade } from "svelte/transition";
+  import { fade } from 'svelte/transition'
 
-  export let url: string | null = null;
-  export let alt: string = "";
-  export let loading: "lazy" | "eager" = "lazy";
+  export let url: string | null = null
+  export let alt: string = ''
+  export let loading: 'lazy' | 'eager' = 'lazy'
 </script>
 
 <div class="image-container" class:image-container--no-image={!url}>
@@ -22,7 +22,7 @@
   }
 
   .image-container--no-image {
-    background-image: url("/assets/icons/music-note.svg");
+    background-image: url('/assets/icons/music-note.svg');
   }
 
   .image {

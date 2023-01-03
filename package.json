@@ -8,6 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
+    "prettier": "npx prettier src --check --plugin-search-dir=. ./**/*.svelte",
+    "prettier:fix": "npm run prettier -- --write --plugin-search-dir=. ./**/*.svelte",
     "tauri": "tauri"
   },
   "dependencies": {
@@ -19,6 +21,8 @@
     "@tsconfig/svelte": "^3.0.0",
     "@types/node": "^18.7.10",
     "jsmediatags": "^3.9.7",
+    "prettier": "^2.8.1",
+    "prettier-plugin-svelte": "^2.9.0",
     "svelte": "^3.49.0",
     "svelte-check": "^2.8.0",
     "svelte-preprocess": "^4.10.7",

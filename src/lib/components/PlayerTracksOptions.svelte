@@ -1,22 +1,22 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher } from 'svelte'
 
-  export let loop: boolean = false;
-  export let shuffle: boolean = false;
-  export let disableAll: boolean = false;
+  export let loop: boolean = false
+  export let shuffle: boolean = false
+  export let disableAll: boolean = false
 
   const dispatch = createEventDispatcher<{
-    changeShuffle: boolean;
-  }>();
+    changeShuffle: boolean
+  }>()
 
   const handleChangeLoop = () => {
-    loop = !loop;
-  };
+    loop = !loop
+  }
 
   const handleChangeShuffle = () => {
-    shuffle = !shuffle;
-    dispatch("changeShuffle", shuffle);
-  };
+    shuffle = !shuffle
+    dispatch('changeShuffle', shuffle)
+  }
 </script>
 
 <button
@@ -26,7 +26,7 @@
   aria-checked={loop}
   disabled={disableAll}
 >
-  {loop ? "lopped" : "not looped"}
+  {loop ? 'lopped' : 'not looped'}
 </button>
 
 <button
@@ -36,5 +36,5 @@
   aria-checked={shuffle}
   disabled={disableAll}
 >
-  {shuffle ? "shuffle" : "not shuffle"}
+  {shuffle ? 'shuffle' : 'not shuffle'}
 </button>
