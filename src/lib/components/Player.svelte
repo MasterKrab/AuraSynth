@@ -84,7 +84,7 @@
   }
 
   const handleChangeShuffle = ({ detail: shuffle }: CustomEvent<boolean>) => {
-    shuffle ? music.shuffleTracks() : music.resetTracks()
+    shuffle ? music.shuffleTracks() : music.unShuffleTracks()
   }
 
   onMount(() => {
