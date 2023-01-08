@@ -1,6 +1,24 @@
 :root {
   --header-height: 2rem;
   --player-height: 7.5rem;
+
+  --primary-color: #fff;
+  --secondary-color: #f9f4f4;
+  --tertiary-color: #111;
+  --tertiary-color-transparent: rgba(17, 17, 17, 0.5);
+  --quaternary-color: #222;
+  --quinary-color: #767676;
+
+  --primary-font: 'Noto Sans', sans-serif;
+}
+
+:root.dark-theme {
+  --primary-color: #151515;
+  --secondary-color: rgba(0, 0, 0, 0.2);
+  --tertiary-color: #fff;
+  --tertiary-color-transparent: rgba(255, 255, 255, 0.5);
+  --quaternary-color: #d0cdcd;
+  --quinary-color: #a19e9e;
 }
 
 *,
@@ -10,14 +28,25 @@
 }
 
 html {
+  background-color: var(--primary-color);
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
+  font-family: var(--primary-font);
+  color: var(--quaternary-color);
 }
 
 img {
   display: block;
   max-width: 100%;
+}
+
+button {
+  background-color: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0;
 }
