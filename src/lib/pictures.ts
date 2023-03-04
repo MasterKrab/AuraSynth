@@ -5,7 +5,6 @@ import { invoke, convertFileSrc } from '@tauri-apps/api/tauri'
 import { exists } from '@tauri-apps/api/fs'
 import { cacheDir, join } from '@tauri-apps/api/path'
 
-import { encodeFilename, decodeFilename } from './filenameNormalization'
 
 let cacheDirPath: string
 const getCacheDirPath = async () =>
@@ -40,8 +39,8 @@ export const getAlbumPicture = async (album: Album) => {
   const albumPath = await join(
     await getCacheDirPath(),
     'album-artworks',
-    encodeFilename(album.artist || 'unknown'),
-    encodeFilename(album.title || 'unknown')
+    album.artist || 'unknown',
+    album.title || 'unknown'
   )
 
   try {
