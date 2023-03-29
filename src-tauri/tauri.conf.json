@@ -58,6 +58,9 @@
         "certificateThumbprint": null,
         "digestAlgorithm": "sha256",
         "timestampUrl": ""
+      },
+      "appimage": {
+        "bundleMediaFramework": true
       }
     },
     "updater": {
