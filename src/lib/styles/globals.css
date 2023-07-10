@@ -13,14 +13,16 @@
   --secondary-font: 'Noto Sans', sans-serif;
 }
 
-:root {
-  --primary-color: #121212;
-  --secondary-color: #282828;
-  --tertiary-color: #fff;
-  --tertiary-color-transparent: rgba(27, 12, 12, 0.5);
-  --quaternary-color: #d0cdcd;
-  --quaternary-color-transparent: rgba(208, 205, 205, 0.5);
-  --quinary-color: #a19e9e;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary-color: #121212;
+    --secondary-color: #282828;
+    --tertiary-color: #fff;
+    --tertiary-color-transparent: rgba(27, 12, 12, 0.5);
+    --quaternary-color: #d0cdcd;
+    --quaternary-color-transparent: rgba(208, 205, 205, 0.5);
+    --quinary-color: #a19e9e;
+  }
 }
 
 *,
@@ -57,4 +59,3 @@ a {
   text-decoration: none;
   color: inherit;
 }
-
