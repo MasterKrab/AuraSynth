@@ -39,4 +39,13 @@
     overflow: auto;
     width: 100vw;
   }
+
+  .page::-webkit-scrollbar {
+    width: 0.5rem;
+    height: 0.5rem;
+  }
+
+  .page::-webkit-scrollbar-thumb {
+    background-color: var(--quaternary-color);
+  }
 </style>
