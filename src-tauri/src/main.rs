@@ -3,8 +3,6 @@
     windows_subsystem = "windows"
 )]
 
-use id3::{Tag, TagLike};
-
 #[derive(Clone, serde::Serialize)]
 struct Comment {
     lang: String,
@@ -45,22 +43,24 @@ fn replace_null(text: &str) -> String {
     text.replace("\0", "/")
 }
 
+use id3::{Tag, TagLike};
 use std::fs::{File, create_dir_all};
 use std::path::{Path, PathBuf};
-use std::io::{Write, Seek, Read};
+use std::io::{Write, Seek, Read, BufReader};
 use std::thread;
-use ffprobe;
+use metadata::media_file::MediaFileMetadata;
 
 #[tauri::command]
 async fn read_song_metadata(path: &str) -> Result<Song, String> {
     let path2 = path.to_string();
 
-    let handle = thread::spawn(|| {
-        match ffprobe::ffprobe(path2) {
-            Ok(probe) => {
-                match probe.format.duration {
-                    Some(duration) => Some(duration.parse::<f32>().unwrap() as u32),
-                    None => None
+    let handle = thread::spawn(move || {
+        match MediaFileMetadata::new(&path2) {
+            Ok(metadata) => {
+                if let Some(duration) = metadata._duration {
+                    Some(duration as u32)
+                } else {
+                    None
                 }
             },
             Err(_) => None
