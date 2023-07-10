@@ -6,14 +6,15 @@
   export let loading: 'lazy' | 'eager' = 'lazy'
 </script>
 
-<div class="image-container" class:image-container--no-image={!url}>
+<span class="image-container" class:image-container--no-image={!url}>
   {#if url}
     <img class="image" in:fade={{ duration: 250 }} src={url} {loading} {alt} />
   {/if}
-</div>
+</span>
 
 <style>
   .image-container {
+    display: block;
     max-width: 100%;
     aspect-ratio: 1 / 1;
     background-repeat: no-repeat;
@@ -26,6 +27,7 @@
   }
 
   .image {
+    border-radius: 0.25rem;
     object-fit: cover;
   }
 </style>

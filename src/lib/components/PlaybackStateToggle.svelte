@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
-  import InlineSVG from 'svelte-inline-svg'
+  import Svg from './Svg.svelte'
 
   export let isPlaying: boolean = false
   export let disabled = false
@@ -17,9 +17,16 @@
   aria-label="Play/Pause"
   {disabled}
 >
-  {#if isPlaying}
-    <InlineSVG src="/assets/icons/pause.svg" width="3.5em" />
-  {:else}
-    <InlineSVG src="/assets/icons/play.svg" width="3.5em" />
-  {/if}
+  <Svg
+    src="/assets/icons/pause.svg"
+    width="2.5em"
+    fill="var(--quaternary-color)"
+    display={isPlaying ? 'block' : 'none'}
+  />
+  <Svg
+    src="/assets/icons/play.svg"
+    width="2.5em"
+    fill="var(--quaternary-color)"
+    display={isPlaying ? 'none' : 'block'}
+  />
 </button>

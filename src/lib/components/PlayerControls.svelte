@@ -1,8 +1,8 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
-  import InlineSVG from 'svelte-inline-svg'
 
   import PlaybackStateToggle from './PlaybackStateToggle.svelte'
+  import Svg from './Svg.svelte'
 
   export let isPlaying: boolean
   export let disablePlayBackState: boolean = false
@@ -25,24 +25,43 @@
   }
 </script>
 
-<button
-  on:click={handlePreviusTrack}
-  aria-label="Previous track"
-  disabled={disableAll || disablePreviousTrack}
->
-  <InlineSVG src="/assets/icons/fast-backward.svg" width="3.5em" />
-</button>
+<section class="player-controls-buttons">
+  <button
+    on:click={handlePreviusTrack}
+    aria-label="Previous track"
+    disabled={disableAll || disablePreviousTrack}
+  >
+    <Svg
+      src="/assets/icons/fast-backward.svg"
+      width="3em"
+      fill="var(--quaternary-color)"
+    />
+  </button>
 
-<PlaybackStateToggle
-  on:change={handleChangePlayBackState}
-  disabled={disableAll || disablePlayBackState}
-  {isPlaying}
-/>
+  <PlaybackStateToggle
+    on:change={handleChangePlayBackState}
+    disabled={disableAll || disablePlayBackState}
+    {isPlaying}
+  />
 
-<button
-  on:click={handleNextTrack}
-  aria-label="Next track"
-  disabled={disableAll || disableNextTrack}
->
-  <InlineSVG src="/assets/icons/fast-forward.svg" width="3.5em" />
-</button>
+  <button
+    on:click={handleNextTrack}
+    aria-label="Next track"
+    disabled={disableAll || disableNextTrack}
+  >
+    <Svg
+      src="/assets/icons/fast-forward.svg"
+      width="3em"
+      fill="var(--quaternary-color)"
+    />
+  </button>
+</section>
+
+<style>
+  .player-controls-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2em;
+  }
+</style>

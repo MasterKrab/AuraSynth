@@ -5,36 +5,34 @@
   import { convertFileSrc } from '@tauri-apps/api/tauri'
 
   import music from '../stores/music'
-  import { getSongPicture } from '../pictures'
   import { updateMediaSessionSong, resetMediaSession } from '../mediaSession'
   import formatSeconds from '../formatSeconds'
-  import Artwork from './Artwork.svelte'
+  import SongArtwork from './SongArtwork.svelte'
+  import MovingText from './MovingText.svelte'
   import PlayerControls from './PlayerControls.svelte'
   import PlayerTracksOptions from './PlayerTracksOptions.svelte'
+  import Slider from './Slider.svelte'
+  import VolumeSlider from './VolumeSlider.svelte'
+  import Svg from './Svg.svelte'
 
   let audioElement: HTMLAudioElement
   let currentTime = 0
-  let artwork: Picture | null = null
   let isPlaying = false
   let duration = 0
   let playbackRate: number
-  let volume: number
+  let volume = 1
+  let showOptions = false
+  let artwork: Picture
 
-  $: navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused'
-
-  $: if ($music.currentSong?.path) {
-    artwork = null
-
-    getSongPicture($music.currentSong.path).then((picture) => {
-      artwork = picture
-    })
+  $: if (navigator.mediaSession) {
+    navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused'
   }
 
-  $: if ($music.currentSong && artwork)
+  $: if ($music.currentSong && artwork) {
     updateMediaSessionSong($music.currentSong, artwork)
+  }
 
   $: if (!$music.currentSong) {
-    artwork = null
     resetMediaSession()
   }
 
@@ -87,7 +85,13 @@
     shuffle ? music.shuffleTracks() : music.unShuffleTracks()
   }
 
+  const handleToggleShowOptions = () => {
+    showOptions = !showOptions
+  }
+
   onMount(() => {
+    if (!navigator.mediaSession) return
+
     navigator.mediaSession.setActionHandler('play', async () => {
       await audioElement.play()
       updatePositionState()
@@ -124,33 +128,36 @@
   })
 </script>
 
+<audio
+  class="audio"
+  src={$music?.currentSong?.path && convertFileSrc($music.currentSong.path)}
+  on:play={handlePlay}
+  on:pause={handlePause}
+  on:ended={nextTrack}
+  on:ratechange={updatePositionState}
+  bind:this={audioElement}
+  bind:currentTime
+  bind:duration
+  bind:playbackRate
+  bind:volume
+  autoplay
+  controls
+/>
+
 <article class="player" aria-label="Player">
-  {#if artwork}
-    <Artwork url={artwork.url} alt={artwork.description} />
-  {/if}
-
-  {#if $music.currentSong}
-    <h1>{$music.currentSong.title || 'Unknown title'}</h1>
-    <p>{$music.currentSong.artist || 'Unknown artist'}</p>
-  {/if}
-
-  <p>{formatSeconds(currentTime)} / {formatSeconds(duration)}</p>
-
-  <audio
-    class="audio"
-    src={$music?.currentSong?.path && convertFileSrc($music.currentSong.path)}
-    on:play={handlePlay}
-    on:pause={handlePause}
-    on:ended={nextTrack}
-    on:ratechange={updatePositionState}
-    bind:this={audioElement}
-    bind:currentTime
-    bind:duration
-    bind:playbackRate
-    bind:volume
-    autoplay
-    controls
-  />
+  <div class="info">
+    {#if $music.currentSong}
+      <SongArtwork bind:picture={artwork} path={$music.currentSong.path} />
+      <div class="info__text-container">
+        <h1 class="info__title">
+          <MovingText text={$music.currentSong.title || 'Unknown title'} />
+        </h1>
+        <p class="info__artist">
+          <MovingText text={$music.currentSong.artist || 'Unknown artist'} />
+        </p>
+      </div>
+    {/if}
+  </div>
 
   <PlayerControls
     {isPlaying}
@@ -164,27 +171,157 @@
     disableAll={$music.tracks.length === 0}
   />
 
-  {#if audioElement}
-    <input type="range" bind:value={currentTime} min={0} max={duration} />
-  {/if}
+  <Slider bind:value={currentTime} max={duration} step={0.01} />
 
-  <input type="range" bind:value={volume} min={0} max={1} step={0.01} />
+  <p class="time-text">
+    {formatSeconds(currentTime)} / {formatSeconds(duration)}
+  </p>
 
-  <PlayerTracksOptions
-    bind:loop={$music.loop}
-    shuffle={$music.shuffle}
-    on:changeShuffle={handleChangeShuffle}
-  />
+  <button
+    class="toggle-options"
+    on:click={handleToggleShowOptions}
+    role="switch"
+    aria-checked={showOptions}
+    aria-label="Options"
+  >
+    <Svg
+      src="/assets/icons/chevron-down.svg"
+      aria-hidden="true"
+      fill="var(--quaternary-color)"
+      width="2.5rem"
+    />
+  </button>
+
+  <div class="options" class:options--show={showOptions}>
+    <VolumeSlider bind:value={volume} />
+
+    <PlayerTracksOptions
+      bind:loop={$music.loop}
+      shuffle={$music.shuffle}
+      on:changeShuffle={handleChangeShuffle}
+    />
+  </div>
 </article>
 
 <style>
-  .player {
-    display: flex;
-    height: var(--player-height, 15rem);
-    font-size: 0.5rem;
-  }
-
   .audio {
     display: none;
+  }
+
+  .player {
+    position: relative;
+    display: grid;
+    grid-template-columns: 6fr 1fr 6fr 1fr;
+    align-items: center;
+    height: var(--player-height);
+    font-size: 0.7rem;
+    padding: 0.75rem;
+  }
+
+  @media screen and (min-width: 50rem) {
+    .player {
+      grid-template-columns: 1fr 12.5rem repeat(2, 0.5fr);
+    }
+  }
+
+  .player > :global(.slider) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translateY(-100%);
+  }
+
+  .info {
+    overflow: hidden;
+  }
+
+  .info > :global(.image-container) {
+    display: none;
+  }
+
+  @media (min-width: 50rem) {
+    .info {
+      display: grid;
+      grid-template-columns: calc(var(--player-height) - 1.5rem) 1fr;
+    }
+
+    .info > :global(.image-container) {
+      display: block;
+    }
+  }
+
+  .info__text-container {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.75rem;
+    padding: 0.2rem 0.5rem;
+    grid-column: 2 / 3;
+  }
+
+  .info__title,
+  .info__artist {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .info__title {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .info__artist {
+    font-size: 0.9rem;
+    font-family: var(--secondary-font);
+    color: var(--quinary-color);
+  }
+
+  .time-text {
+    text-align: center;
+    font-size: 0.85rem;
+  }
+
+  @media (min-width: 50rem) {
+    .time-text {
+      text-align: start;
+    }
+  }
+
+  @media (min-width: 50rem) {
+    .toggle-options {
+      display: none;
+    }
+  }
+
+  .options {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 2rem;
+    padding: 0.5rem;
+    margin-right: 1rem;
+  }
+
+  @media (max-width: 50rem) {
+    .options {
+      position: absolute;
+      top: 0;
+      right: 0;
+      transform: translateY(calc(-100% - 1rem));
+      padding: 0.5rem 1.5rem;
+      background-color: var(--primary-color);
+      border: 1px solid var(--tertiary-color-transparent);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+    }
+
+    .options--show {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
+  .options :global(.volume-slider) {
+    width: 6rem;
   }
 </style>
