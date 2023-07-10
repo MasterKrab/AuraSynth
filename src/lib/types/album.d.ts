@@ -1,5 +1,3 @@
-import type Picture from './picture'
-
 interface Album {
   title?: string
   artist?: string

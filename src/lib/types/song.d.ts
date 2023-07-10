@@ -1,4 +1,3 @@
-import Picture from './picture'
 import Lyrics from './lyrics'
 
 interface Song {

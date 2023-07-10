@@ -1,19 +1,15 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
+  import type Picture from '../types/picture'
 
   import Artwork from './Artwork.svelte'
   import { getSongPicture } from '../pictures'
 
   export let path: string
+  export let picture: Picture = null
 
-  let url: string | null = null
-  let alt: string = ''
-
-  onMount(async () => {
-    const picture = await getSongPicture(path)
-    url = picture.url
-    alt = picture.description
+  $: getSongPicture(path).then((result) => {
+    picture = result
   })
 </script>
 
-<Artwork {url} {alt} />
+<Artwork url={picture?.url} alt={picture?.description} />

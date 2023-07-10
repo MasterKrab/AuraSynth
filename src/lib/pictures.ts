@@ -2,9 +2,9 @@ import type Picture from './types/picture'
 import type Album from './types/album'
 
 import { invoke, convertFileSrc } from '@tauri-apps/api/tauri'
-import { exists } from '@tauri-apps/api/fs'
+import { exists, readBinaryFile } from '@tauri-apps/api/fs'
 import { cacheDir, join } from '@tauri-apps/api/path'
-
+import toImageUrl from './toImageUrl'
 
 let cacheDirPath: string
 const getCacheDirPath = async () =>
@@ -40,13 +40,13 @@ export const getAlbumPicture = async (album: Album) => {
     await getCacheDirPath(),
     'album-artworks',
     album.artist || 'unknown',
-    album.title || 'unknown'
+    `${album.title || 'unknown'}.jpg`
   )
 
   try {
     const isCachedFS = (await exists(albumPath)) as unknown as boolean
 
-    if (isCachedFS) return convertFileSrc(albumPath)
+    if (isCachedFS) return toImageUrl('jpeg', await readBinaryFile(albumPath))
 
     const artwork = await getFirstPicture(
       ...album.songs.map((song) => song.path)
@@ -55,7 +55,7 @@ export const getAlbumPicture = async (album: Album) => {
     if (!artwork) return null
 
     await writeImageUrl(albumPath, artwork.url)
-    return convertFileSrc(albumPath)
+    return toImageUrl('jpeg', await readBinaryFile(albumPath))
   } catch (error) {
     console.error(albumPath, error)
   }
