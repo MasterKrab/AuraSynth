@@ -22,11 +22,13 @@
     width="2.5em"
     fill="var(--quaternary-color)"
     display={isPlaying ? 'block' : 'none'}
+    aria-hidden="true"
   />
   <Svg
     src="/assets/icons/play.svg"
     width="2.5em"
     fill="var(--quaternary-color)"
     display={isPlaying ? 'none' : 'block'}
+    aria-hidden="true"
   />
 </button>

@@ -15,19 +15,20 @@
   }
 </script>
 
-<article
-  class="album"
-  aria-label="Album"
-  transition:fly={{ y: 50, duration: 500 }}
->
+<article class="album" aria-label="Album" in:fly={{ y: 50, duration: 500 }}>
   <div class="album__artwork-container">
     <Artwork url={album.artworkUrl} {loading} />
 
-    <button class="album__button" on:click={handleClickPlay}>
+    <button
+      class="album__button"
+      on:click={handleClickPlay}
+      aria-label="Play album: {album.title}"
+    >
       <Svg
         src="/assets/icons/play.svg"
         width="1.75em"
-        fill="var(--tertiary-color)"
+        fill="#fff"
+        aria-hidden="true"
       />
     </button>
   </div>
@@ -60,7 +61,7 @@
     left: 50%;
     width: 5em;
     height: 5em;
-    background-color: var(--tertiary-color-transparent);
+    background-color: rgba(17, 17, 17, 0.5);
     padding-left: 0.5rem;
     border-radius: 50%;
     transform: translate(-50%, -50%);

@@ -48,6 +48,7 @@
       width="2.5em"
       color="var(--quaternary-color)"
       opacity={shuffle ? '1' : '0.6'}
+      aria-hidden="true"
     />
   </button>
 </section>
