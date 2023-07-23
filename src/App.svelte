@@ -1,25 +1,36 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
   import { Router, Route } from 'svelte-routing'
 
-  import music from './lib/stores/music'
+  import FloatingFocus from './lib/components/FloatingFocus.svelte'
   import Header from './lib/components/Header.svelte'
   import Songs from './lib/routes/Songs.svelte'
   import Albums from './lib/routes/Albums.svelte'
   import Player from './lib/components/Player.svelte'
+  import Settings from './lib/pages/settings.svelte'
+
+  import music from './lib/stores/music'
+  import './lib/stores/folders'
+  import './lib/stores/theme'
 
   export let url = ''
-
-  onMount(async () => await music.load())
 </script>
+
+<FloatingFocus />
 
 <Header />
 
 <main class="main">
   <div class="page">
     <Router {url}>
-      <Route path="/" component={Songs} />
-      <Route path="/albums" component={Albums} />
+      <Route path="/">
+        <Songs songs={$music.songs} />
+      </Route>
+      <Route path="/albums">
+        <Albums albums={$music.albums} />
+      </Route>
+      <Route path="/settings">
+        <Settings />
+      </Route>
     </Router>
   </div>
 

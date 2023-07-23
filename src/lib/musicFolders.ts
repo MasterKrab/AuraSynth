@@ -16,3 +16,15 @@ export const getMusicFolders = async (): Promise<string[]> => {
 
 export const saveMusicFolders = (folders: string[]) =>
   localStorage.setItem(MUSIC_FOLDERS_KEY, JSON.stringify(folders))
+
+export const addMusicFolder = async (folder: string) => {
+  const folders = await getMusicFolders()
+  folders.push(folder)
+  saveMusicFolders(folders)
+}
+
+export const removeMusicFolder = async (folder: string) => {
+  const folders = await getMusicFolders()
+  const filteredFolders = folders.filter((currentFolder) => currentFolder !== folder)
+  saveMusicFolders(filteredFolders)
+}

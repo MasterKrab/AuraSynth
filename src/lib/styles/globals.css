@@ -2,27 +2,27 @@
   --header-height: 3rem;
   --player-height: 5rem;
 
-  --primary-color: #fff;
-  --secondary-color: #f9f4f4;
-  --tertiary-color: #111;
-  --tertiary-color-transparent: rgba(17, 17, 17, 0.5);
-  --quaternary-color: #222;
-  --quinary-color: #767676;
-
   --primary-font: 'Raleway' sans-serif;
   --secondary-font: 'Noto Sans', sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --primary-color: #121212;
-    --secondary-color: #282828;
-    --tertiary-color: #fff;
-    --tertiary-color-transparent: rgba(27, 12, 12, 0.5);
-    --quaternary-color: #d0cdcd;
-    --quaternary-color-transparent: rgba(208, 205, 205, 0.5);
-    --quinary-color: #a19e9e;
-  }
+:root.light-theme {
+  --primary-color: #fff;
+  --secondary-color: #e2dede;
+  --tertiary-color: #111;
+  --tertiary-color-transparent: rgba(17, 17, 17, 0.5);
+  --quaternary-color: #222;
+  --quinary-color: #767676;
+}
+
+:root.dark-theme {
+  --primary-color: #121212;
+  --secondary-color: #282828;
+  --tertiary-color: #fff;
+  --tertiary-color-transparent: rgba(27, 12, 12, 0.5);
+  --quaternary-color: #d0cdcd;
+  --quaternary-color-transparent: rgba(208, 205, 205, 0.5);
+  --quinary-color: #a19e9e;
 }
 
 *,

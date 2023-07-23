@@ -11,23 +11,23 @@ const createMusic = () => {
   const { subscribe, set, update } = writable<{
     songs: Song[]
     albums: Album[]
-    folders: string[]
     tracks: Song[]
     orderedTracks: Song[]
     currentSong: Song | null
     currentSongIndex: number
     shuffle: boolean
     loop: boolean
+    loading: boolean
   }>({
     songs: [],
     albums: [],
-    folders: [],
     tracks: [],
     orderedTracks: [],
     currentSong: null,
     currentSongIndex: -1,
     shuffle: false,
     loop: false,
+    loading: false,
   })
 
   const songIndex = new Map<string, Song>()
@@ -45,6 +45,11 @@ const createMusic = () => {
   })
 
   const load = async () => {
+    update((state) => ({
+      ...state,
+      loading: true,
+    }))
+
     const folders = await getMusicFolders()
     const songsPromise = folders.map(searchSongs)
     const songs = (await Promise.all(songsPromise)).flat()
@@ -78,7 +83,7 @@ const createMusic = () => {
       ...state,
       songs,
       albums,
-      folders,
+      loading: false,
     }))
   }
 
@@ -189,6 +194,8 @@ const createMusic = () => {
       }
     })
   }
+
+  load()
 
   return {
     subscribe,
