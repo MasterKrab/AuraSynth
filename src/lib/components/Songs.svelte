@@ -4,6 +4,7 @@
   import music from '../stores/music'
   import SongArtwork from './SongArtwork.svelte'
   import formatSeconds from '../formatSeconds'
+  import NoMusicMessage from './NoMusicMessage.svelte'
 
   export let songs: Song[]
 
@@ -38,6 +39,8 @@
 
       <p class="text">{formatSeconds(song.duration)}</p>
     </article>
+  {:else}
+    <NoMusicMessage />
   {/each}
 </article>
 
