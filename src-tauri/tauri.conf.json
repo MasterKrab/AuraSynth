@@ -74,7 +74,15 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "AuraSynth"
+        "title": "AuraSynth",
+        "visible": false
+      },
+      {
+        "width": 350,
+        "height": 500,
+        "decorations": false,
+        "url": "splashscreen.html",
+        "label": "splashscreen"
       }
     ]
   }

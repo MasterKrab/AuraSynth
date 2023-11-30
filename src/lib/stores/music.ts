@@ -2,6 +2,8 @@ import type Song from '../types/song'
 import type Album from '../types/album'
 
 import { writable } from 'svelte/store'
+import { invoke } from '@tauri-apps/api/tauri'
+
 import { getMusicFolders } from '../musicFolders'
 import { searchSongs } from '../musicFiles'
 import { getAlbumPicture } from '../pictures'
@@ -18,6 +20,7 @@ const createMusic = () => {
     shuffle: boolean
     loop: boolean
     loading: boolean
+    init: boolean
   }>({
     songs: [],
     albums: [],
@@ -28,20 +31,28 @@ const createMusic = () => {
     shuffle: false,
     loop: false,
     loading: false,
+    init: false
   })
 
   const songIndex = new Map<string, Song>()
   const albumIndex = new Map<string, Album>()
 
+  let isSplashscreenVisible = true;
+
   const getSong = (path: string) => songIndex.get(path)
   const getAlbum = (title: string) => albumIndex.get(title)
 
-  subscribe(({ songs, albums }) => {
+  subscribe(({ songs, albums, init }) => {
     songIndex.clear()
     albumIndex.clear()
 
     songs.forEach((song) => songIndex.set(song.path, song))
     albums.forEach((album) => albumIndex.set(album.title, album))
+
+    if (isSplashscreenVisible && init) {
+      invoke("close_splashscreen")
+      isSplashscreenVisible = false
+    }
   })
 
   const load = async () => {
@@ -84,6 +95,7 @@ const createMusic = () => {
       songs,
       albums,
       loading: false,
+      init: true,
     }))
   }
 
