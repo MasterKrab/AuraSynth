@@ -19,78 +19,81 @@ struct Picture {
 }
 
 #[derive(Clone, serde::Serialize)]
-struct Lyrics {
-    lang: String,
-    description: String,
-    text: String,
-}
-
-#[derive(Clone, serde::Serialize)]
 struct Song {
     title: Option<String>,
     artist: Option<String>,
     album: Option<String>,
-    year: Option<String>,
-    comment: Vec<Comment>,
+    year: Option<u32>,
+    comment: Option<String>,
     track: Option<u32>,
     genre: Option<String>,
     duration: Option<u32>,
-    lyrics: Vec<Lyrics>
 }
 
-
-fn replace_null(text: &str) -> String {
-    text.replace("\0", "/")
-}
-
-use id3::{Tag, TagLike};
-use std::fs::{File, create_dir_all};
-use std::path::{Path, PathBuf};
-use std::io::{Write, Seek, Read, BufReader};
-use std::thread;
-use metadata::media_file::MediaFileMetadata;
+use id3::Tag;
+use std::fs::{create_dir_all, File};
+use std::io::Write;
+use std::path::PathBuf;
+use taglib::File as FileTag;
 
 #[tauri::command]
 async fn read_song_metadata(path: &str) -> Result<Song, String> {
-    let path2 = path.to_string();
-
-    let handle = thread::spawn(move || {
-        match MediaFileMetadata::new(&path2) {
-            Ok(metadata) => {
-                if let Some(duration) = metadata._duration {
-                    Some(duration as u32)
-                } else {
-                    None
-                }
-            },
-            Err(_) => None
-        }
-    });
-
-    let tag = match Tag::read_from_path(path) {
-        Ok(tag) => tag,
-        Err(e) => return Err(e.to_string()),
+    let file = match FileTag::new(&path) {
+        Ok(file) => file,
+        Err(_e) => return Err("Failed to read file".to_string()),
     };
 
-    let title = if let Some(title) = tag.title() { Some(replace_null(title)) } else { None };
-    let artist = if let Some(artist) = tag.artist() { Some(replace_null(artist)) } else { None };
-    let album = if let Some(album) = tag.album() { Some(album.to_string()) } else { None };
-    let year = if let Some(year) = tag.year() { Some(year.to_string()) } else { None };
-    let comment = tag.comments().map(|comment| Comment {
-        lang: comment.lang.to_string(),
-        description: comment.description.to_string(),
-        text: comment.text.to_string(),
-    }).collect();
-    let track = if let Some(track) = tag.track() { Some(track) } else { None };
-    let genre = if let Some(genre) = tag.genre() { Some(genre.to_string()) } else { None };
+    let tag = match file.tag() {
+        Ok(tag) => tag,
+        Err(_e) => return Err("Failed to read metadata".to_string()),
+    };
 
-    let lyrics = tag.lyrics().map(|lyrics| Lyrics {
-        lang: lyrics.lang.to_string(),
-        description: lyrics.description.to_string(),
-        text: lyrics.text.to_string(),
-    }).collect();
+    let duration = match file.audioproperties() {
+        Ok(properties) => Some(properties.length()),
+        Err(_e) => return Err("Failed to read audio properties".to_string()),
+    };
 
-    let duration = handle.join().unwrap();
+    let title = if let Some(title) = tag.title() {
+        Some(title)
+    } else {
+        None
+    };
+
+    let artist = if let Some(artist) = tag.artist() {
+        Some(artist)
+    } else {
+        None
+    };
+
+    let album = if let Some(album) = tag.album() {
+        Some(album)
+    } else {
+        None
+    };
+
+    let year = if let Some(year) = tag.year() {
+        Some(year)
+    } else {
+        None
+    };
+
+    let comment = if let Some(comment) = tag.comment() {
+        Some(comment)
+    } else {
+        None
+    };
+
+    let track = if let Some(track) = tag.track() {
+        Some(track)
+    } else {
+        None
+    };
+
+    let genre = if let Some(genre) = tag.genre() {
+        Some(genre)
+    } else {
+        None
+    };
 
     Ok(Song {
         title,
@@ -100,8 +103,7 @@ async fn read_song_metadata(path: &str) -> Result<Song, String> {
         comment,
         track,
         genre,
-        lyrics,
-        duration
+        duration,
     })
 }
 
@@ -117,26 +119,24 @@ fn image_url_to_buffer(url: &str) -> Result<Vec<u8>, std::io::Error> {
     Ok(base64::decode(&base64).unwrap())
 }
 
-
-
 #[tauri::command]
 fn write_image_url(path: String, data: &str) -> Result<(), String> {
     let mut folders_path = PathBuf::from(&path);
     folders_path.pop();
-    
+
     match create_dir_all(folders_path) {
         Ok(_) => (),
-        Err(e) => return Err(e.to_string())
+        Err(e) => return Err(e.to_string()),
     }
 
     let mut file = match File::create(path) {
         Ok(file) => file,
-        Err(e) => return Err(e.to_string())
+        Err(e) => return Err(e.to_string()),
     };
 
-    match file.write_all(&image_url_to_buffer(data).unwrap())  {
+    match file.write_all(&image_url_to_buffer(data).unwrap()) {
         Ok(_) => Ok(()),
-        Err(e) => return Err(e.to_string())
+        Err(e) => return Err(e.to_string()),
     }
 }
 
@@ -154,18 +154,20 @@ fn get_song_picture(path: &str) -> Result<Option<Picture>, String> {
             mime_type: picture.mime_type.to_string(),
             picture_type: picture.picture_type.to_string(),
             description: picture.description.to_string(),
-            url: to_image_url(&picture)
+            url: to_image_url(&picture),
         }))
     } else {
         Ok(None)
     }
 }
 
-
-
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![read_song_metadata, get_song_picture, write_image_url])
+        .invoke_handler(tauri::generate_handler![
+            read_song_metadata,
+            get_song_picture,
+            write_image_url
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

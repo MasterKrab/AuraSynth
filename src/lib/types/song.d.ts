@@ -9,7 +9,6 @@ interface Song {
   comment?: string
   track?: number
   genre: ?string
-  lyrics: Lyrics[]
   duration: number
 }
 
