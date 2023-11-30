@@ -1,7 +1,7 @@
 import type Picture from './types/picture'
 import type Album from './types/album'
 
-import { invoke } from '@tauri-apps/api/tauri'
+import { invoke, convertFileSrc } from '@tauri-apps/api/tauri'
 import { exists, readBinaryFile } from '@tauri-apps/api/fs'
 import { cacheDir, join } from '@tauri-apps/api/path'
 import toImageUrl from './toImageUrl'
@@ -55,7 +55,7 @@ export const getAlbumPicture = async (album: Album) => {
     if (!artwork) return null
 
     await writeImageUrl(albumPath, artwork.url)
-    return toImageUrl('jpeg', await readBinaryFile(albumPath))
+    return convertFileSrc(albumPath)
   } catch (error) {
     console.error(albumPath, error)
   }
