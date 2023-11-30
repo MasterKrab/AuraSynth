@@ -8,7 +8,6 @@
   import Player from './lib/components/Player.svelte'
   import Settings from './lib/pages/settings.svelte'
 
-  import music from './lib/stores/music'
   import './lib/stores/folders'
   import './lib/stores/theme'
 
@@ -23,10 +22,10 @@
   <div class="page">
     <Router {url}>
       <Route path="/">
-        <Songs songs={$music.songs} />
+        <Songs />
       </Route>
       <Route path="/albums">
-        <Albums albums={$music.albums} />
+        <Albums />
       </Route>
       <Route path="/settings">
         <Settings />
