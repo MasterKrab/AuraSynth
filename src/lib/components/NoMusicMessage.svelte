@@ -1,12 +1,24 @@
 <script lang="ts">
   import { link } from 'svelte-routing'
+
+  import music from '../stores/music'
+
+  import Svg from './Svg.svelte'
 </script>
 
-<section class="message" aria-labelledby="no-music-message">
-  <p class="text" id="no-music-message">No music Found</p>
-  <p class="text">Please add some music folders</p>
-  <a class="link" href="/settings#folders" use:link>Go to settings</a>
-</section>
+{#if !$music.loading}
+  <section class="message" aria-labelledby="no-music-message">
+    <p class="text" id="no-music-message">No music found</p>
+    <Svg
+      src="/assets/icons/logo.svg"
+      width="10rem"
+      height="10rem"
+      aria-hidden="true"
+    />
+    <p class="text">Please add some music folders</p>
+    <a class="link" href="/settings#folders" use:link>Go to settings</a>
+  </section>
+{/if}
 
 <style>
   .message {
@@ -14,9 +26,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 1.5em;
+    gap: 1rem;
+    font-size: 1.75rem;
     padding: 1rem;
+    margin-top: 5rem;
   }
 
   .text {

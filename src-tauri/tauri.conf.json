@@ -7,21 +7,25 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "tauri-music-player",
+    "productName": "AuraSynth",
     "version": "0.0.0"
   },
   "tauri": {
     "allowlist": {
       "all": true,
       "fs": {
-        "scope": ["**"]
+        "scope": [
+          "**"
+        ]
       },
       "path": {
         "all": true
       },
       "protocol": {
         "asset": true,
-        "assetScope": ["**"]
+        "assetScope": [
+          "**"
+        ]
       }
     },
     "security": {
@@ -42,7 +46,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "music-player",
+      "identifier": "AuraSynth",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
@@ -69,10 +73,8 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
         "resizable": true,
-        "title": "tauri-music-player",
-        "width": 800
+        "title": "AuraSynth"
       }
     ]
   }

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { link } from 'svelte-routing'
 
+  import music from '../stores/music'
   import Svg from './Svg.svelte'
   import ReloadMusic from './ReloadMusic.svelte'
 </script>
@@ -54,6 +55,7 @@
   .header {
     display: flex;
     align-items: center;
+    gap: 1rem;
     background-color: var(--secondary-color);
     padding-left: 0.5rem;
     padding-right: 0.5rem;
