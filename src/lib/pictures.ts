@@ -1,7 +1,7 @@
 import type Picture from './types/picture'
 import type Album from './types/album'
 
-import { invoke, convertFileSrc } from '@tauri-apps/api/tauri'
+import { invoke } from '@tauri-apps/api/tauri'
 import { exists, readBinaryFile } from '@tauri-apps/api/fs'
 import { cacheDir, join } from '@tauri-apps/api/path'
 import toImageUrl from './toImageUrl'
