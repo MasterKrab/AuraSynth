@@ -1,11 +1,6 @@
 [package]
-name = "tauri-music-player"
-version = "0.0.0"
-description = "A Tauri App"
-authors = ["you"]
-license = ""
-repository = ""
-edition = "2021"
+name = "AuraSynth"
+version = "1.0.0"
 rust-version = "1.57"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
