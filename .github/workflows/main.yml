@@ -11,7 +11,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ubuntu-20.04, windows-latest]
+        platform: [macos-latest, ubuntu-20.04, windows-latest]
+        include:
+          - platform: windows-latest
+            compiler: vs2019
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -36,7 +39,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake -G "Visual Studio 16 2019" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DENABLE_STATIC_RUNTIME=ON ..
+          cmake -G "Visual Studio 16 2019" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DENABLE_STATIC_RUNTIME=ON -DCMAKE_PREFIX_PATH=C:/TagLib ..
           msbuild all_build.vcxproj /p:Configuration=Release
           msbuild install.vcxproj
           cd ..
