@@ -15,7 +15,16 @@
       "all": true,
       "fs": {
         "scope": [
-          "**"
+          "**",
+          "$APP",
+          "$APP/**",
+          "$CACHE",
+          "$CACHE/**",
+          "$CONFIG",
+          "$CONFIG/**",
+          "$LOG",
+          "$LOG/**",
+          "$HOME/**"
         ]
       },
       "path": {
@@ -24,7 +33,16 @@
       "protocol": {
         "asset": true,
         "assetScope": [
-          "**"
+          "**",
+          "$APP",
+          "$APP/**",
+          "$CACHE",
+          "$CACHE/**",
+          "$CONFIG",
+          "$CONFIG/**",
+          "$LOG",
+          "$LOG/**",
+          "$HOME/**"
         ]
       }
     },

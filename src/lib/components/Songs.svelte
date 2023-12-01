@@ -13,7 +13,7 @@
 
     music.setSongsToTracks(song)
   }
-  createPlaySongDoubleClick
+
   const createPlaySong = (song: Song) => () => {
     music.setSongsToTracks(song)
   }
