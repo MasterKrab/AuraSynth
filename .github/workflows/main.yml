@@ -11,10 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [macos-latest, ubuntu-20.04, windows-latest]
-        include:
-          - platform: windows-latest
-            compiler: vs2019
+        platform: [ubuntu-20.04]
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -34,17 +31,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf libtagc0-dev
-      - name: install TagLib on Windows
-        if: matrix.platform == 'windows-latest'
-        run: |
-          mkdir build
-          cd build
-          cmake -G "Visual Studio 16 2019" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DENABLE_STATIC_RUNTIME=ON -DCMAKE_PREFIX_PATH=C:/TagLib ..
-          msbuild all_build.vcxproj /p:Configuration=Release
-          msbuild install.vcxproj
-          cd ..
-          rmdir /S /Q build
-          setx PATH "%PATH%;C:\TagLib\bin"
       - name: install frontend dependencies
         run: pnpm install
       - uses: tauri-apps/tauri-action@v0
