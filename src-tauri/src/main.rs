@@ -4,13 +4,6 @@
 )]
 
 #[derive(Clone, serde::Serialize)]
-struct Comment {
-    lang: String,
-    description: String,
-    text: String,
-}
-
-#[derive(Clone, serde::Serialize)]
 struct Picture {
     mime_type: String,
     picture_type: String,
@@ -24,61 +17,43 @@ struct Song {
     artist: Option<String>,
     album: Option<String>,
     year: Option<u32>,
-    comment: Option<String>,
     track: Option<u32>,
     genre: Option<String>,
-    duration: Option<u32>,
 }
 
-use id3::Tag;
+use id3::{Tag, TagLike};
 use std::fs::{create_dir_all, File};
 use std::io::Write;
 use std::path::PathBuf;
-use taglib::File as FileTag;
+
+fn replace_null(text: &str) -> String {
+    text.replace("\0", "/")
+}
 
 #[tauri::command]
 async fn read_song_metadata(path: &str) -> Result<Song, String> {
-    let file = match FileTag::new(&path) {
-        Ok(file) => file,
-        Err(_e) => return Err("Failed to read file".to_string()),
-    };
-
-    let tag = match file.tag() {
+    let tag = match Tag::read_from_path(path) {
         Ok(tag) => tag,
-        Err(_e) => return Err("Failed to read metadata".to_string()),
-    };
-
-    let duration = match file.audioproperties() {
-        Ok(properties) => Some(properties.length()),
-        Err(_e) => return Err("Failed to read audio properties".to_string()),
+        Err(e) => return Err(e.to_string()),
     };
 
     let title = if let Some(title) = tag.title() {
-        Some(title)
+        Some(replace_null(title))
     } else {
         None
     };
-
     let artist = if let Some(artist) = tag.artist() {
-        Some(artist)
+        Some(replace_null(artist))
     } else {
         None
     };
-
     let album = if let Some(album) = tag.album() {
-        Some(album)
+        Some(album.to_string())
     } else {
         None
     };
-
     let year = if let Some(year) = tag.year() {
-        Some(year)
-    } else {
-        None
-    };
-
-    let comment = if let Some(comment) = tag.comment() {
-        Some(comment)
+        Some(year as u32)
     } else {
         None
     };
@@ -88,9 +63,8 @@ async fn read_song_metadata(path: &str) -> Result<Song, String> {
     } else {
         None
     };
-
     let genre = if let Some(genre) = tag.genre() {
-        Some(genre)
+        Some(genre.to_string())
     } else {
         None
     };
@@ -100,10 +74,8 @@ async fn read_song_metadata(path: &str) -> Result<Song, String> {
         artist,
         album,
         year,
-        comment,
         track,
         genre,
-        duration,
     })
 }
 

@@ -6,10 +6,8 @@ interface Song {
   artist?: string
   album?: string
   year?: string
-  comment?: string
   track?: number
   genre: ?string
-  duration: number
 }
 
 export default Song
