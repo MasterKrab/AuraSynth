@@ -3,7 +3,6 @@
 
   import music from '../stores/music'
   import SongArtwork from './SongArtwork.svelte'
-  import formatSeconds from '../formatSeconds'
   import NoMusicMessage from './NoMusicMessage.svelte'
 
   export let songs: Song[]
@@ -36,8 +35,6 @@
       {#if song.year}
         <p class="text">{song.year}</p>
       {/if}
-
-      <p class="text">{formatSeconds(song.duration)}</p>
     </article>
   {:else}
     <NoMusicMessage />
@@ -127,6 +124,10 @@
 
   .text {
     width: 25%;
+  }
+
+  .text:nth-of-type(3) {
+    width: 10%;
   }
 
   @media (max-width: 20rem) {
