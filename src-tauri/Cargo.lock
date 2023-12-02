@@ -10,6 +10,7 @@ dependencies = [
  "id3",
  "serde",
  "serde_json",
+ "taglib",
  "tauri",
  "tauri-build",
 ]
